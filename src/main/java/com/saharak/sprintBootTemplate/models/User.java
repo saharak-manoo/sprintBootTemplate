@@ -14,30 +14,34 @@ import java.text.MessageFormat;
 public class User implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "id")
+  @Column(name = "id", updatable = false)
   @ApiModelProperty(hidden = true)
   private Long id;
 
   @NotBlank(message = "Username can't be blank")
   @Size(min = 6, max = 100, message = "Username size must be between 6 and 100")
-  @Column(name = "username", unique = true)
+  @Column(name = "username", unique = true, updatable = false)
   @JsonProperty("username")
+  @ApiModelProperty(value = "username", dataType = "java.lang.String", required = true)
   private String username;
 
   @NotBlank(message = "Password can't be blank")
   @Size(min = 6, max = 100, message = "Password size must be between 6 and 100")
-  @Column(name = "password")
+  @Column(name = "password", updatable = false)
   @JsonProperty("password")
+  @ApiModelProperty(value = "password", dataType = "java.lang.String", required = true)
   private String password;
 
   @NotBlank(message = "FirstName can't be blank")
-  @Column(name = "firstName")
+  @Column(name = "first_name")
   @JsonProperty("firstName")
+  @ApiModelProperty(value = "firstName", dataType = "java.lang.String", required = true)
   private String firstName;
 
   @NotBlank(message = "LastName can't be blank")
-  @Column(name = "lastName")
+  @Column(name = "last_name")
   @JsonProperty("lastName")
+  @ApiModelProperty(value = "lastName", dataType = "java.lang.String", required = true)
   private String lastName;
 
   public Long getId() {
@@ -83,6 +87,10 @@ public class User implements Serializable {
   }
 
   public UserResponse asJson() {
-    return new UserResponse(this.firstName);
+    return new UserResponse(this.getId(), this.getUsername(), this.getFullName());
   }
+
+public Object thenReturn(User newUser) {
+	return null;
+}
 } 

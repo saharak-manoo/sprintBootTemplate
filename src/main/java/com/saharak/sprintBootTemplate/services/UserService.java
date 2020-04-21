@@ -9,8 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
 import java.util.List;
 
 @Service("userService")
@@ -38,10 +36,6 @@ public class UserService {
     return userRepository.findById(id).orElse(null);
   }
 
-  public List<Long> findBookOrdersById(final Long id) {
-    return userRepository.findBookOrdersById(id);
-  }
-
   public List<User> all() {
     return userRepository.findAll();
   }
@@ -67,6 +61,7 @@ public class UserService {
       userRepository.delete(user);
       return true;
     }
+
     return false;
   }
 }

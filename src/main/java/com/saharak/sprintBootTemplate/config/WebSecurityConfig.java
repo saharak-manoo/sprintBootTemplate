@@ -50,6 +50,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   public void configure(WebSecurity web) throws Exception {
     web.ignoring().antMatchers(HttpMethod.GET, "/api/v1/users")
+                  .antMatchers(HttpMethod.GET, "/api/v1/users/{id}")
+                  .antMatchers(HttpMethod.PUT, "/api/v1/users/{id}")
+                  .antMatchers(HttpMethod.DELETE, "/api/v1/users/{id}")
                   .antMatchers(HttpMethod.POST, "/api/v1/users")
                   .antMatchers(
                     "/v2/api-docs", 
