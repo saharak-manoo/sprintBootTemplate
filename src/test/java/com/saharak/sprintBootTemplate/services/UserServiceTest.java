@@ -22,10 +22,14 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalToObject;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.hamcrest.CoreMatchers.*;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -54,7 +58,22 @@ public class UserServiceTest {
   }
 
   @Test
+  public void findById() throws Exception {
+    Mockito.doThrow(new RuntimeException()).when(userRepositoryMock).findById(anyLong());
+  }
+
+  @Test
+  public void all() throws Exception {
+    when(userRepositoryMock.findAll()).thenReturn(asList(mock(User.class)));
+  }
+
+  @Test
   public void save() throws Exception {
     when(userRepositoryMock.save(any(User.class))).thenReturn(mock(User.class));
+  }
+
+  @Test
+  public void delete() throws Exception {
+    Mockito.doThrow(new RuntimeException()).when(userRepositoryMock).delete(any(User.class));
   }
 }
