@@ -13,6 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,21 +39,15 @@ public class User implements Serializable {
   @JsonProperty("password")
   private String password;
 
-  @NotBlank(message = "Name can't be blank")
-  @Column(name = "name")
-  @JsonProperty("name")
-  private String name;
+  @NotBlank(message = "FirstName can't be blank")
+  @Column(name = "firstName")
+  @JsonProperty("firstName")
+  private String firstName;
 
-  @NotBlank(message = "Surname can't be blank")
-  @Column(name = "surname")
-  @JsonProperty("surname")
-  private String surname;
-
-  @NotNull(message = "Date of birth can't be blank")
-  @Column(name = "date_of_birth")
-  @JsonProperty("date_of_birth")
-  @JsonFormat(locale = "th", shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "Asia/Bangkok")
-  private Date dateOfBirth;
+  @NotBlank(message = "LastName can't be blank")
+  @Column(name = "lastName")
+  @JsonProperty("lastName")
+  private String lastName;
 
   public Long getId() {
     return id;
@@ -74,27 +70,23 @@ public class User implements Serializable {
     this.password = passwordEncoder.encode(password);
   }
 
-  public String getName() {
-    return name;
+  public String getFirstName() {
+    return firstName;
   }
 
-  public void setName(final String name) {
-    this.name = name;
+  public void setFirstName(final String firstName) {
+    this.firstName = firstName;
   }
 
-  public String getSurname() {
-    return surname;
+  public String getLastName() {
+    return lastName;
   }
 
-  public void setSurname(final String surname) {
-    this.surname = surname;
+  public String getFullName() {
+    return MessageFormat.format("{0} {1}", firstName, lastName);
   }
 
-  public Date getDateOfBirth() {
-    return dateOfBirth;
-  }
-
-  public void setDateOfBirth(final Date dateOfBirth) {
-    this.dateOfBirth = dateOfBirth;
+  public void setLastName(final String lastName) {
+    this.lastName = lastName;
   }
 }

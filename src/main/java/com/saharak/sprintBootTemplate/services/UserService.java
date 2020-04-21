@@ -9,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service("userService")
@@ -50,9 +52,8 @@ public class UserService {
   public User update(final User user, final Long id) {
     final User updateUser = userRepository.findById(id).orElse(null);
     if (updateUser != null) {
-      updateUser.setName(user.getName());
-      updateUser.setSurname(user.getSurname());
-      updateUser.setDateOfBirth(user.getDateOfBirth());
+      updateUser.setFirstName(user.getFirstName());
+      updateUser.setLastName(user.getLastName());
     }
     userRepository.save(updateUser);
 
