@@ -12,14 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
-import java.sql.Date;
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 @RunWith(SpringRunner.class)

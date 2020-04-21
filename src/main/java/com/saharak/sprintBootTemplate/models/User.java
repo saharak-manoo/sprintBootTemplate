@@ -14,29 +14,29 @@ import java.text.MessageFormat;
 public class User implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "id")
+  @Column(name = "id", updatable = false)
   @ApiModelProperty(hidden = true)
   private Long id;
 
   @NotBlank(message = "Username can't be blank")
   @Size(min = 6, max = 100, message = "Username size must be between 6 and 100")
-  @Column(name = "username", unique = true)
+  @Column(name = "username", unique = true, updatable = false)
   @JsonProperty("username")
   private String username;
 
   @NotBlank(message = "Password can't be blank")
   @Size(min = 6, max = 100, message = "Password size must be between 6 and 100")
-  @Column(name = "password")
+  @Column(name = "password", updatable = false)
   @JsonProperty("password")
   private String password;
 
   @NotBlank(message = "FirstName can't be blank")
-  @Column(name = "firstName")
+  @Column(name = "first_name")
   @JsonProperty("firstName")
   private String firstName;
 
   @NotBlank(message = "LastName can't be blank")
-  @Column(name = "lastName")
+  @Column(name = "last_name")
   @JsonProperty("lastName")
   private String lastName;
 
@@ -83,6 +83,6 @@ public class User implements Serializable {
   }
 
   public UserResponse asJson() {
-    return new UserResponse(this.firstName);
+    return new UserResponse(this.getId(), this.getUsername(), this.getFullName());
   }
 } 

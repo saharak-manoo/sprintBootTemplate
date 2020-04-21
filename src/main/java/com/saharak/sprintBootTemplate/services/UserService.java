@@ -38,10 +38,6 @@ public class UserService {
     return userRepository.findById(id).orElse(null);
   }
 
-  public List<Long> findBookOrdersById(final Long id) {
-    return userRepository.findBookOrdersById(id);
-  }
-
   public List<User> all() {
     return userRepository.findAll();
   }
