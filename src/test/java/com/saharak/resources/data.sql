@@ -1,0 +1,1 @@
+INSERT INTO `users` (`username`, `password`, `name`, `surname`, `date_of_birth`) VALUES ('saharakmanoo', '$2a$10$nFKCEkBzv7BjAwfjloTZReJ04jItk7bjJY6xbWpl68Xg6ha4A/Oae', 'Saharak', 'Manoo', NOW());
