@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -31,8 +32,11 @@ public class UserController extends ApplicationController {
     value = "Gets users", 
     notes = "Gets all users in database")
   @GetMapping("/users")
-  public ResponseEntity<List<User>> index() throws Exception {
-    return ResponseEntity.ok(userService.all());
+  public ResponseEntity<List<UserResponse>> index() throws Exception {
+    final List<UserResponse> userResponses = new ArrayList<>();
+    userService.all().forEach(user -> userResponses.add(user.asJson()));
+
+    return ResponseEntity.ok(userResponses);
   }
 
   @ApiOperation(
@@ -48,7 +52,7 @@ public class UserController extends ApplicationController {
   @GetMapping("/users/information")
   public ResponseEntity<UserResponse> information() throws Exception {
     final User user = userService.findForAuthentication();
-    final UserResponse userResponse = new UserResponse(user.getFullName());
+    final UserResponse userResponse = user.asJson();
     if (user == null) {
       throw new UserNotFoundException("Username or password incorrect");
     }
@@ -79,7 +83,13 @@ public class UserController extends ApplicationController {
   @ApiOperation(
     value = "Delete logged in user’s", 
     notes = "Delete logged in user’s")
-  @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", example = "Bearer accessToken")
+  @ApiImplicitParam(
+    name = "Authorization", 
+    value = "Access Token", 
+    required = true, 
+    allowEmptyValue = false, 
+    paramType = "header", 
+    example = "Bearer accessToken")
   @DeleteMapping("/users")
   public ResponseEntity<String> remove() throws Exception {
     final User user = userService.findForAuthentication();
@@ -119,8 +129,10 @@ public class UserController extends ApplicationController {
     value = "Updated user by identifier", 
     notes = "Updated user by identifier in database")
   @PutMapping("/users/{id}")
-  public ResponseEntity<User> update(@Valid @RequestBody final User user, @PathVariable(value = "id") final Long id) throws Exception {
-    return ResponseEntity.ok(userService.update(user, id));
+  public ResponseEntity<User> update(
+    @Valid @RequestBody final User user, 
+    @PathVariable(value = "id") final Long id) throws Exception {
+    return ResponseEntity.ok(userService.update(id, user));
   }
 
   @ApiOperation(
@@ -128,7 +140,7 @@ public class UserController extends ApplicationController {
     notes = "Deleted user by identifier in database")
   @DeleteMapping("/users/{id}")
   public ResponseEntity<?> delete(@PathVariable final Long id) throws Exception {
-    User user = userService.findById(id);
+    final User user = userService.findById(id);
 
     if (userService.delete(id)) {
       final SuccessResponse<User> response = new SuccessResponse<>();

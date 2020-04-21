@@ -40,6 +40,7 @@ public class User implements Serializable {
   @JsonProperty("lastName")
   private String lastName;
 
+  @ApiModelProperty(hidden = true)
   public Long getId() {
     return id;
   }
@@ -61,18 +62,21 @@ public class User implements Serializable {
     this.password = passwordEncoder.encode(password);
   }
 
+  @ApiModelProperty(hidden = true)
   public String getFirstName() {
     return firstName;
   }
-
+  
   public void setFirstName(final String firstName) {
     this.firstName = firstName;
   }
 
+  @ApiModelProperty(hidden = true)
   public String getLastName() {
     return lastName;
   }
 
+  @ApiModelProperty(hidden = true)
   public String getFullName() {
     return MessageFormat.format("{0} {1}", firstName, lastName);
   }
@@ -80,4 +84,8 @@ public class User implements Serializable {
   public void setLastName(final String lastName) {
     this.lastName = lastName;
   }
-}
+
+  public UserResponse asJson() {
+    return new UserResponse(this.firstName);
+  }
+} 
