@@ -29,17 +29,6 @@ public class UserController extends ApplicationController {
   private LineService lineService;
 
   @ApiOperation(
-    value = "Gets users", 
-    notes = "Gets all users in database")
-  @GetMapping("/users")
-  public ResponseEntity<List<UserResponse>> index() throws Exception {
-    final List<UserResponse> userResponses = new ArrayList<>();
-    userService.all().forEach(user -> userResponses.add(user.asJson()));
-
-    return ResponseEntity.ok(userResponses);
-  }
-
-  @ApiOperation(
     value = "Gets information about the logged in user", 
     notes = "Gets information about the logged in user")
   @ApiImplicitParam(
@@ -103,6 +92,18 @@ public class UserController extends ApplicationController {
     } else {
       throw new UserNotFoundException("Username or password incorrect");
     }
+  }
+
+  // Not JWT
+  @ApiOperation(
+    value = "Gets users", 
+    notes = "Gets all users in database")
+  @GetMapping("/users")
+  public ResponseEntity<List<UserResponse>> index() throws Exception {
+    final List<UserResponse> userResponses = new ArrayList<>();
+    userService.all().forEach(user -> userResponses.add(user.asJson()));
+
+    return ResponseEntity.ok(userResponses);
   }
 
   @ApiOperation(

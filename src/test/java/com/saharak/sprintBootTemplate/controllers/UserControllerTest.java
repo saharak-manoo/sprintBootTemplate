@@ -71,16 +71,15 @@ public class UserControllerTest {
     Map<String, Object> jwt = getJwt();
 
     final ResultActions result = mockMvc
-        .perform(get("/users")
+        .perform(get("/api/v1/users/information")
         .header(
           "Authorization", 
-          MessageFormat.format("{0}", get("tokenType"), jwt.get("accessToken")))
+          MessageFormat.format("{0} {1}", jwt.get("tokenType"), jwt.get("accessToken")))
         .contentType(MediaType.APPLICATION_JSON)
     );
 
     result.andExpect(status().isOk())
-          .andExpect(jsonPath("$.name", is("SpringBootLoginWithJwt")))
-          .andExpect(jsonPath("$.surname", is("Test")));
+          .andExpect(jsonPath("$.fullName", is("SpringBootLoginWithJwt Test")));
   }
 
   @Rollback(true)
@@ -107,8 +106,8 @@ public class UserControllerTest {
 
     final ResultActions result = mockMvc.perform(delete("/api/v1/users")
       .header(
-      "Authorization", 
-      MessageFormat.format("{0}", get("tokenType"), jwt.get("accessToken")))
+        "Authorization", 
+        MessageFormat.format("{0} {1}", jwt.get("tokenType"), jwt.get("accessToken")))
       .contentType(MediaType.APPLICATION_JSON)
     );
 
