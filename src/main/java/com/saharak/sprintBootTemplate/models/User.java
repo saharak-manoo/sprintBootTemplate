@@ -22,22 +22,26 @@ public class User implements Serializable {
   @Size(min = 6, max = 100, message = "Username size must be between 6 and 100")
   @Column(name = "username", unique = true, updatable = false)
   @JsonProperty("username")
+  @ApiModelProperty(value = "username", dataType = "java.lang.String", required = true)
   private String username;
 
   @NotBlank(message = "Password can't be blank")
   @Size(min = 6, max = 100, message = "Password size must be between 6 and 100")
   @Column(name = "password", updatable = false)
   @JsonProperty("password")
+  @ApiModelProperty(value = "password", dataType = "java.lang.String", required = true)
   private String password;
 
   @NotBlank(message = "FirstName can't be blank")
   @Column(name = "first_name")
   @JsonProperty("firstName")
+  @ApiModelProperty(value = "firstName", dataType = "java.lang.String", required = true)
   private String firstName;
 
   @NotBlank(message = "LastName can't be blank")
   @Column(name = "last_name")
   @JsonProperty("lastName")
+  @ApiModelProperty(value = "lastName", dataType = "java.lang.String", required = true)
   private String lastName;
 
   public Long getId() {
@@ -85,4 +89,8 @@ public class User implements Serializable {
   public UserResponse asJson() {
     return new UserResponse(this.getId(), this.getUsername(), this.getFullName());
   }
+
+public Object thenReturn(User newUser) {
+	return null;
+}
 } 

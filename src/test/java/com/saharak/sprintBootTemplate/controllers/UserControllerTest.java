@@ -4,6 +4,8 @@ import com.saharak.sprintBootTemplate.models.User;
 import com.saharak.sprintBootTemplate.models.JwtRequest;
 import com.saharak.sprintBootTemplate.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.core.Is.is;
 import java.text.MessageFormat;
 import java.util.Map;
+import org.mockito.Mock.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -76,7 +79,6 @@ public class UserControllerTest {
     result.andExpect(status().isOk())
           .andExpect(jsonPath("$.data.fullName", is("SpringBootLoginWithJwt Test")))
           .andExpect(jsonPath("$.status", is(200)));
-          
   }
 
   @Rollback(true)
