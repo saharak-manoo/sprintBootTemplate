@@ -2,19 +2,12 @@ package com.saharak.sprintBootTemplate.models;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.MessageFormat;
 
 @Entity
 @Table(name = "users")
@@ -37,21 +30,15 @@ public class User implements Serializable {
   @JsonProperty("password")
   private String password;
 
-  @NotBlank(message = "Name can't be blank")
-  @Column(name = "name")
-  @JsonProperty("name")
-  private String name;
+  @NotBlank(message = "FirstName can't be blank")
+  @Column(name = "firstName")
+  @JsonProperty("firstName")
+  private String firstName;
 
-  @NotBlank(message = "Surname can't be blank")
-  @Column(name = "surname")
-  @JsonProperty("surname")
-  private String surname;
-
-  @NotNull(message = "Date of birth can't be blank")
-  @Column(name = "date_of_birth")
-  @JsonProperty("date_of_birth")
-  @JsonFormat(locale = "th", shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "Asia/Bangkok")
-  private Date dateOfBirth;
+  @NotBlank(message = "LastName can't be blank")
+  @Column(name = "lastName")
+  @JsonProperty("lastName")
+  private String lastName;
 
   public Long getId() {
     return id;
@@ -74,27 +61,28 @@ public class User implements Serializable {
     this.password = passwordEncoder.encode(password);
   }
 
-  public String getName() {
-    return name;
+  @ApiModelProperty(hidden = true)
+  public String getFullName() {
+    return MessageFormat.format("{0} {1}", firstName, lastName);
   }
 
-  public void setName(final String name) {
-    this.name = name;
+  public String getFirstName() {
+    return firstName;
+  }
+  
+  public void setFirstName(final String firstName) {
+    this.firstName = firstName;
   }
 
-  public String getSurname() {
-    return surname;
+  public String getLastName() {
+    return lastName;
   }
 
-  public void setSurname(final String surname) {
-    this.surname = surname;
+  public void setLastName(final String lastName) {
+    this.lastName = lastName;
   }
 
-  public Date getDateOfBirth() {
-    return dateOfBirth;
+  public UserResponse asJson() {
+    return new UserResponse(this.firstName);
   }
-
-  public void setDateOfBirth(final Date dateOfBirth) {
-    this.dateOfBirth = dateOfBirth;
-  }
-}
+} 

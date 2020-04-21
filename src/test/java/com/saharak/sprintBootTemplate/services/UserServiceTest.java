@@ -17,6 +17,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import java.sql.Date;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -34,11 +35,10 @@ public class UserServiceTest {
   public void save() throws Exception {
     Random rand = new Random();
     User newUser = new User();
-    newUser.setUsername("Saharak" + rand.nextInt(5000));
+    newUser.setUsername(MessageFormat.format("Saharak{0, number, integer}", rand.nextInt(5000)));
     newUser.setPassword("password");
-    newUser.setName("Saharak");
-    newUser.setSurname("Manoo");
-    newUser.setDateOfBirth(new Date(1997, 04, 03));
+    newUser.setFirstName("Saharak");
+    newUser.setLastName("Manoo");
     User userSave = userRepository.save(newUser);
 
     User user = userRepository.findByUsername(userSave.getUsername());

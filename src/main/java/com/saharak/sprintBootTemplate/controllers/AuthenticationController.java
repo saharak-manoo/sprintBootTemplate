@@ -1,8 +1,7 @@
 package com.saharak.sprintBootTemplate.controllers;
 
-import java.util.Date;
+import java.text.MessageFormat;
 import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import com.saharak.sprintBootTemplate.config.JwtTokenUtil;
 import com.saharak.sprintBootTemplate.exception.UserNotFoundException;
 import com.saharak.sprintBootTemplate.models.JwtRequest;
@@ -44,11 +42,19 @@ public class AuthenticationController extends ApplicationController {
 	@PostMapping("/login")
 	public ResponseEntity<JwtResponse> generateAuthenticationToken(@RequestBody final JwtRequest authRequest)
 			throws Exception {
-		final User user = authenticate(authRequest.getUsername(), authRequest.getPassword());
+		final User user = authenticate(
+			authRequest.getUsername(), 
+			authRequest.getPassword()
+		);
 
-		final UserDetails userDetails = jwtInMemoryUserDetailsService.loadUserByUsername(user.getUsername());
+		final UserDetails userDetails = jwtInMemoryUserDetailsService.loadUserByUsername(
+			user.getUsername()
+		);
+		
 		final String token = jwtTokenUtil.generateToken(userDetails);
-		lineService.sendNoti("คุณ " + authRequest.getUsername() + " ได้ Login เข้าสู่ระบบ");
+		lineService.sendNoti(
+			MessageFormat.format("คุณ {0} ได้ Login เข้าสู่ระบบ", user.getFullName())
+		);
 
 		return ResponseEntity.ok(new JwtResponse(token));
 	}
@@ -65,7 +71,9 @@ public class AuthenticationController extends ApplicationController {
 				throw new UserNotFoundException("Username or password incorrect");
 			}
 
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(username, password)
+			);
 
 			return user;
 		} catch (final DisabledException e) {
