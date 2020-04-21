@@ -51,7 +51,7 @@ public class UserControllerTest {
     jwtRequest.setUsername(user.getUsername());
     jwtRequest.setPassword(password);
 
-    final ResultActions result = mockMvc.perform(post("/login")
+    final ResultActions result = mockMvc.perform(post("/api/v1/login")
       .contentType(MediaType.APPLICATION_JSON)
       .content(objectMapper.writeValueAsBytes(jwtRequest))
     );
@@ -74,7 +74,7 @@ public class UserControllerTest {
         .perform(get("/users")
         .header(
           "Authorization", 
-          MessageFormat.format("{0}", get("token_type"), jwt.get("access_token")))
+          MessageFormat.format("{0}", get("tokenType"), jwt.get("accessToken")))
         .contentType(MediaType.APPLICATION_JSON)
     );
 
@@ -92,7 +92,7 @@ public class UserControllerTest {
     user.setFirstName("SpringBootLoginWithJwt");
     user.setLastName("Test");
 
-    final ResultActions result = mockMvc.perform(post("/users")
+    final ResultActions result = mockMvc.perform(post("/api/v1/users")
       .contentType(MediaType.APPLICATION_JSON)
       .content(objectMapper.writeValueAsBytes(user))
     );
@@ -105,10 +105,10 @@ public class UserControllerTest {
   public void remove() throws Exception {
     Map<String, Object> jwt = getJwt();
 
-    final ResultActions result = mockMvc.perform(delete("/users")
+    final ResultActions result = mockMvc.perform(delete("/api/v1/users")
       .header(
       "Authorization", 
-      MessageFormat.format("{0}", get("token_type"), jwt.get("access_token")))
+      MessageFormat.format("{0}", get("tokenType"), jwt.get("accessToken")))
       .contentType(MediaType.APPLICATION_JSON)
     );
 

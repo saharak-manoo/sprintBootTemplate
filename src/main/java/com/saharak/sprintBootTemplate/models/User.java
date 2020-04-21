@@ -40,7 +40,6 @@ public class User implements Serializable {
   @JsonProperty("lastName")
   private String lastName;
 
-  @ApiModelProperty(hidden = true)
   public Long getId() {
     return id;
   }
@@ -63,6 +62,10 @@ public class User implements Serializable {
   }
 
   @ApiModelProperty(hidden = true)
+  public String getFullName() {
+    return MessageFormat.format("{0} {1}", firstName, lastName);
+  }
+
   public String getFirstName() {
     return firstName;
   }
@@ -71,14 +74,8 @@ public class User implements Serializable {
     this.firstName = firstName;
   }
 
-  @ApiModelProperty(hidden = true)
   public String getLastName() {
     return lastName;
-  }
-
-  @ApiModelProperty(hidden = true)
-  public String getFullName() {
-    return MessageFormat.format("{0} {1}", firstName, lastName);
   }
 
   public void setLastName(final String lastName) {

@@ -49,8 +49,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers(HttpMethod.GET, "/users")
-                  .antMatchers(HttpMethod.POST, "/users")
+    web.ignoring().antMatchers(HttpMethod.GET, "/api/v1/users")
+                  .antMatchers(HttpMethod.POST, "/api/v1/users")
                   .antMatchers(
                     "/v2/api-docs", 
                     "/configuration/ui", 
@@ -65,7 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     httpSecurity.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/login")
+                .antMatchers("/api/v1/login")
                 .permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll()

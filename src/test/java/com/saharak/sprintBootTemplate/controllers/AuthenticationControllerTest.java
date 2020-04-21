@@ -47,11 +47,11 @@ public class AuthenticationControllerTest {
     jwtRequest.setUsername(user.getUsername());
     jwtRequest.setPassword(password);
 
-    final ResultActions result = mockMvc.perform(
-        post("/login").contentType(MediaType.APPLICATION_JSON)
-                      .content(objectMapper
-                      .writeValueAsBytes(jwtRequest)));
+    final ResultActions result = mockMvc.perform(post("/api/v1/login")
+      .contentType(MediaType.APPLICATION_JSON)
+      .content(objectMapper.writeValueAsBytes(jwtRequest))
+    );
 
-    result.andExpect(status().isOk()).andExpect(jsonPath("$.token_type", is("Bearer")));
+    result.andExpect(status().isOk()).andExpect(jsonPath("$.tokenType", is("Bearer")));
   }
 }
