@@ -28,15 +28,77 @@ public class UserController extends ApplicationController {
   @Autowired
   private LineService lineService;
 
+  // Not JWT
   @ApiOperation(
     value = "Gets users", 
     notes = "Gets all users in database")
   @GetMapping("/users")
-  public ResponseEntity<List<UserResponse>> index() throws Exception {
+  public ResponseEntity<SuccessResponse<List<UserResponse>>> index() throws Exception {
+    final SuccessResponse<List<UserResponse>> response = new SuccessResponse<>();
     final List<UserResponse> userResponses = new ArrayList<>();
     userService.all().forEach(user -> userResponses.add(user.asJson()));
+    response.setData(userResponses);
+    response.setStatus(HttpStatus.OK.value());
 
-    return ResponseEntity.ok(userResponses);
+    return ResponseEntity.ok(response);
+  }
+
+  @ApiOperation(
+    value = "Gets user by identifier", 
+    notes = "Gets user by identifier in database")
+  @GetMapping("/users/{id}")
+  public ResponseEntity<SuccessResponse<UserResponse>> show(@PathVariable final Long id) throws Exception {
+    final User user = userService.findById(id);
+    if (user != null) {
+      final SuccessResponse<UserResponse> response = new SuccessResponse<>();
+      response.setData(user.asJson());
+      response.setStatus(HttpStatus.OK.value());
+      lineService.sendNoti(
+        MessageFormat.format("มีการเรียกดูข้อมูลของคุณ {0}", user.getFullName())
+      );
+
+      return ResponseEntity.ok(response);
+    }
+
+    throw new UserNotFoundException("User not found");
+  }
+
+  @ApiOperation(
+    value = "Updated user by identifier", 
+    notes = "Updated user by identifier in database")
+  @PutMapping("/users/{id}")
+  public ResponseEntity<SuccessResponse<UserResponse>> update(
+    @Valid @RequestBody final User user, 
+    @PathVariable(value = "id") final Long id) throws Exception {
+    try {
+      final SuccessResponse<UserResponse> response = new SuccessResponse<>();
+      response.setData(userService.update(id, user).asJson());
+      response.setStatus(HttpStatus.OK.value());
+
+      return ResponseEntity.ok(response);
+    } catch (final DataIntegrityViolationException e) {
+      throw new UserNotValidationException("User not validation.");
+    }
+  }
+
+  @ApiOperation(
+    value = "Deleted user by identifier", 
+    notes = "Deleted user by identifier in database")
+  @DeleteMapping("/users/{id}")
+  public ResponseEntity<SuccessResponse<UserResponse>> delete(@PathVariable final Long id) throws Exception {
+    final User user = userService.findById(id);
+
+    if (userService.delete(id)) {
+      final SuccessResponse<UserResponse> response = new SuccessResponse<>();
+      response.setStatus(HttpStatus.OK.value());
+      lineService.sendNoti(
+        MessageFormat.format("ได้การลบ {0} เรียบร้อยแล้ว", user.getFullName())
+      );
+
+      return ResponseEntity.ok(response);
+    } else {
+      throw new UserNotFoundException("User not found");
+    }
   }
 
   @ApiOperation(
@@ -50,9 +112,12 @@ public class UserController extends ApplicationController {
     paramType = "header", 
     example = "Bearer accessToken")
   @GetMapping("/users/information")
-  public ResponseEntity<UserResponse> information() throws Exception {
+  public ResponseEntity<SuccessResponse<UserResponse>> information() throws Exception {
     final User user = userService.findForAuthentication();
-    final UserResponse userResponse = user.asJson();
+    final SuccessResponse<UserResponse> response = new SuccessResponse<>();
+    response.setData(user.asJson());
+    response.setStatus(HttpStatus.OK.value());
+
     if (user == null) {
       throw new UserNotFoundException("Username or password incorrect");
     }
@@ -60,23 +125,53 @@ public class UserController extends ApplicationController {
     lineService.sendNoti(
       MessageFormat.format("มีการเรียกดูข้อมูลของคุณ {0}", user.getFullName())
     );
-    return ResponseEntity.ok(userResponse);
+    return ResponseEntity.ok(response);
   }
 
   @ApiOperation(
     value = "Created user", 
     notes = "Created user to database")
   @PostMapping("/users")
-  public ResponseEntity<String> create(@Valid @RequestBody final User user) throws Exception {
+  public ResponseEntity<SuccessResponse<UserResponse>> create(@Valid @RequestBody final User userCreate) throws Exception {
     try {
-      userService.save(user);
+      User user = userService.save(userCreate);
       lineService.sendNoti(
         MessageFormat.format("ได้สร้างผู้ใช้ชื่อ {0} เรียบร้อยแล้ว", user.getFullName())
       );
 
-      return ResponseEntity.status(HttpStatus.CREATED).body(HttpStatus.OK.toString());
+      final SuccessResponse<UserResponse> response = new SuccessResponse<>();
+      response.setData(user.asJson());
+      response.setStatus(HttpStatus.CREATED.value());
+
+      return ResponseEntity.ok(response);
     } catch (final DataIntegrityViolationException e) {
       throw new UserNotValidationException("This username is already taken.");
+    }
+  }
+
+  @ApiOperation(
+    value = "Updated information about the logged in user", 
+    notes = "Updated information about the logged in user")
+  @ApiImplicitParam(
+    name = "Authorization", 
+    value = "Access Token", 
+    required = true, 
+    allowEmptyValue = false, 
+    paramType = "header", 
+    example = "Bearer accessToken")
+  @PutMapping("/users")
+  public ResponseEntity<SuccessResponse<UserResponse>> updateInfomation(
+    @Valid @RequestBody final User userUpdate) throws Exception {
+    final User user = userService.findForAuthentication();
+
+    try {
+      final SuccessResponse<UserResponse> response = new SuccessResponse<>();
+      response.setData(userService.update(user.getId(), userUpdate).asJson());
+      response.setStatus(HttpStatus.OK.value());
+
+      return ResponseEntity.ok(response);
+    } catch (final DataIntegrityViolationException e) {
+      throw new UserNotValidationException("User not validation.");
     }
   }
 
@@ -91,59 +186,11 @@ public class UserController extends ApplicationController {
     paramType = "header", 
     example = "Bearer accessToken")
   @DeleteMapping("/users")
-  public ResponseEntity<String> remove() throws Exception {
+  public ResponseEntity<SuccessResponse<UserResponse>> remove() throws Exception {
     final User user = userService.findForAuthentication();
-    if (user != null) {
-      userService.delete(user.getId());
-      lineService.sendNoti(
-        MessageFormat.format("ได้การลบ {0} เรียบร้อยแล้ว", user.getFullName())
-      );
 
-      return ResponseEntity.ok(HttpStatus.OK.toString());
-    } else {
-      throw new UserNotFoundException("Username or password incorrect");
-    }
-  }
-
-  @ApiOperation(
-    value = "Gets user by identifier", 
-    notes = "Gets user by identifier in database")
-  @GetMapping("/users/{id}")
-  public ResponseEntity<?> show(@PathVariable final Long id) throws Exception {
-    final User user = userService.findById(id);
-    if (user != null) {
-      final SuccessResponse<User> response = new SuccessResponse<>();
-      response.setData(user);
-      response.setStatus(HttpStatus.OK.value());
-      lineService.sendNoti(
-        MessageFormat.format("มีการเรียกดูข้อมูลของคุณ {0}", user.getFullName())
-      );
-
-      return ResponseEntity.ok(response);
-    }
-
-    throw new UserNotFoundException("Username or password incorrect");
-  }
-
-  @ApiOperation(
-    value = "Updated user by identifier", 
-    notes = "Updated user by identifier in database")
-  @PutMapping("/users/{id}")
-  public ResponseEntity<User> update(
-    @Valid @RequestBody final User user, 
-    @PathVariable(value = "id") final Long id) throws Exception {
-    return ResponseEntity.ok(userService.update(id, user));
-  }
-
-  @ApiOperation(
-    value = "Deleted user by identifier", 
-    notes = "Deleted user by identifier in database")
-  @DeleteMapping("/users/{id}")
-  public ResponseEntity<?> delete(@PathVariable final Long id) throws Exception {
-    final User user = userService.findById(id);
-
-    if (userService.delete(id)) {
-      final SuccessResponse<User> response = new SuccessResponse<>();
+    if ( userService.delete(user.getId())) {
+      final SuccessResponse<UserResponse> response = new SuccessResponse<>();
       response.setStatus(HttpStatus.OK.value());
       lineService.sendNoti(
         MessageFormat.format("ได้การลบ {0} เรียบร้อยแล้ว", user.getFullName())
@@ -151,7 +198,7 @@ public class UserController extends ApplicationController {
 
       return ResponseEntity.ok(response);
     } else {
-      throw new UserNotFoundException("Username or password incorrect");
+      throw new UserNotFoundException("User not found");
     }
   }
 }
