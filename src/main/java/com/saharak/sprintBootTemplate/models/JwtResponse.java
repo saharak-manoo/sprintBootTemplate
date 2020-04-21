@@ -18,12 +18,12 @@ public class JwtResponse implements Serializable {
 		this.jwtToken = jwtToken;
 	}
 
-	@JsonProperty("token_type")
+	@JsonProperty("tokenType")
 	public String getTokenType() {
 		return this.tokenType;
 	}
 
-	@JsonProperty("access_token")
+	@JsonProperty("accessToken")
 	public String getToken() {
 		return this.jwtToken;
 	}
