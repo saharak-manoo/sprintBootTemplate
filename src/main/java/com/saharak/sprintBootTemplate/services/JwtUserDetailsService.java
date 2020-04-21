@@ -1,5 +1,6 @@
 package com.saharak.sprintBootTemplate.services;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,9 +21,15 @@ public class JwtUserDetailsService implements UserDetailsService {
 		final User user = userRepository.findByUsername(username);
 
 		if (user != null) {
-			return new org.springframework.security.core.userdetails.User(username, user.getPassword(), new ArrayList<>());
+			return new org.springframework
+										.security
+										.core
+										.userdetails
+										.User(username, user.getPassword(), new ArrayList<>());
 		} else {
-			throw new UsernameNotFoundException("User not found with username: " + username);
+			throw new UsernameNotFoundException(
+				MessageFormat.format("User not found with username: {0}", username)
+			);
 		}
 	}
 }

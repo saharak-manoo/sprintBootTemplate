@@ -9,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service("userService")
@@ -24,6 +26,7 @@ public class UserService {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     final UserDetails currentUser = (UserDetails) auth.getPrincipal();
     final User user = userRepository.findForAuthentication(currentUser.getUsername(), currentUser.getPassword());
+
     if (user == null) {
       throw new UserNotFoundException("Username or password incorrect");
     }
@@ -47,22 +50,21 @@ public class UserService {
     return userRepository.save(user);
   }
 
-  public User update(final User user, final Long id) {
-    final User updateUser = userRepository.findById(id).orElse(null);
-    if (updateUser != null) {
-      updateUser.setName(user.getName());
-      updateUser.setSurname(user.getSurname());
-      updateUser.setDateOfBirth(user.getDateOfBirth());
+  public User update(final Long id, final User userUpdate) {
+    final User user = userRepository.findById(id).orElse(null);
+    if (user != null) {
+      user.setFirstName(userUpdate.getFirstName());
+      user.setLastName(userUpdate.getLastName());
     }
-    userRepository.save(updateUser);
+    userRepository.save(user);
 
-    return updateUser;
+    return user;
   }
 
   public Boolean delete(final Long id) {
-    final User delUser = userRepository.findById(id).orElse(null);
-    if (delUser != null) {
-      userRepository.delete(delUser);
+    final User user = userRepository.findById(id).orElse(null);
+    if (user != null) {
+      userRepository.delete(user);
       return true;
     }
     return false;

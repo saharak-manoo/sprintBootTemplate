@@ -49,17 +49,34 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers(HttpMethod.GET, "/books").antMatchers(HttpMethod.POST, "/users").antMatchers(
-        "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html",
-        "/webjars/**");
+    web.ignoring().antMatchers(HttpMethod.GET, "/api/v1/users")
+                  .antMatchers(HttpMethod.POST, "/api/v1/users")
+                  .antMatchers(
+                    "/v2/api-docs", 
+                    "/configuration/ui", 
+                    "/swagger-resources/**", 
+                    "/configuration/security", 
+                    "/swagger-ui.html",
+                    "/webjars/**");
   }
 
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception {
-    httpSecurity.csrf().disable().authorizeRequests().antMatchers("/login").permitAll()
-        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated().and().exceptionHandling()
-        .authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    httpSecurity.csrf()
+                .disable()
+                .authorizeRequests()
+                .antMatchers("/api/v1/login")
+                .permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
   }
